@@ -105,6 +105,25 @@ svg.arch .f.soft { stroke: var(--muted); }
 svg.arch .f.hot { stroke: var(--accent); stroke-width: 2; }
 svg.arch .ah { fill: var(--fg); }
 svg.arch .ah.hot { fill: var(--accent); }
+svg.arch .zl { font-size: 10px; fill: var(--muted); text-anchor: end; }
+svg.arch .f.by1 { stroke: var(--ai-s); }
+svg.arch .f.by2 { stroke: var(--app-s); }
+svg.arch .ah.by1, svg.arch .e.by1 { fill: var(--ai-s); }
+svg.arch .ah.by2, svg.arch .e.by2 { fill: var(--app-s); }
+svg.arch .e.by1, svg.arch .e.by2 { font-weight: 700; }
+svg.arch .chev { fill: #fff; stroke: var(--app-s); stroke-width: 1.1; }
+svg.arch .chev.ai { fill: var(--ai-f); stroke: var(--ai-s); }
+svg.arch .ct { font-size: 11px; font-weight: 700; fill: var(--fg); text-anchor: middle; }
+svg.arch .brk { fill: none; stroke: var(--head); stroke-width: 1.2; }
+svg.arch .bl { font-size: 11px; font-weight: 700; fill: var(--head); text-anchor: middle; }
+svg.arch .usr { fill: var(--client-f); stroke: var(--client-s); stroke-width: 1.4; }
+svg.arch .db { stroke-width: 1.4; }
+svg.arch .e.r { text-anchor: end; }
+svg.arch .stp { fill: var(--head); }
+svg.arch .stpn { font-size: 10px; font-weight: 700; fill: #fff; text-anchor: middle; }
+svg.arch .wait { fill: #fff3d6; fill-opacity: 0.6; stroke: var(--cross-s); stroke-width: 1; stroke-dasharray: 4 3; }
+svg.arch rect.b.opt { stroke-dasharray: 4 3; }
+svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-anchor: middle; }
 </style>
 </head>
 <body>
@@ -263,30 +282,29 @@ svg.arch .ah.hot { fill: var(--accent); }
 <table>
 <tr><th>요소</th><th>하는 일</th><th>왜</th><th>기술 예</th></tr>
 <tr><th colspan="4" class="grp">규정 문서 (예: 약관·매뉴얼 PDF) · 등록될 때 배치</th></tr>
-<tr><td class="k"><span class="n">①</span> 배치 수집</td><td>문서 등록 이벤트로 원본을 가져와 보관</td><td>자주 안 바뀌고 저장 전 확인 필요</td><td class="c">Airflow</td></tr>
-<tr><td class="k"><span class="n">②</span> 문서 파싱</td><td>레이아웃 분석 → 단 순서로 추출 → 구조(조·절) 단위로 나눔, 표 별도, 버전 메타데이터</td><td>구조가 깨지면 검색·인용이 깨짐</td><td class="c">PyMuPDF, pdfplumber, LLM 보조</td></tr>
+<tr><td class="k"><span class="n">①</span> 배치 수집</td><td>문서 등록 이벤트로 원본을 가져와 보관</td><td>자주 안 바뀜, 저장 전 확인</td><td class="c">Airflow</td></tr>
+<tr><td class="k"><span class="n">②</span> 문서 파싱</td><td>레이아웃 분석 → 구조(조·절) 단위로 나눔, 표 별도, 버전 부착</td><td>구조가 깨지면 인용도 깨짐</td><td class="c">PyMuPDF, pdfplumber, LLM 보조</td></tr>
 <tr><td class="k"><span class="n">③</span> 구조 검사</td><td>원문 대비 조항 수·표 개수·누락률, 버전 중복</td><td>정답 없이 틀린 것 찾기</td><td class="c">검증 규칙</td></tr>
-<tr><td class="k"><span class="n">④</span> 근거 DB·색인</td><td>DB에 문서·버전·조각 저장 → 임베딩 → 색인</td><td>DB가 근거의 원본, 색인은 다시 만드는 사본</td><td class="c">PostgreSQL, OpenSearch</td></tr>
+<tr><td class="k"><span class="n">④</span> 근거 DB·색인</td><td>DB에 문서·버전·조각 저장 → 임베딩 → 색인</td><td>DB가 원본, 색인은 사본</td><td class="c">PostgreSQL, OpenSearch</td></tr>
 <tr><td class="k"><span class="n">⑤</span> 검색 API</td><td>버전·권한 조건을 먼저 걸고 하이브리드 검색</td><td>RAG 근거 제공</td><td class="c">사내 API</td></tr>
 <tr><th colspan="4" class="grp">서류 이미지 (예: 영수증·신청서) · 들어오는 즉시</th></tr>
-<tr><td class="k"><span class="n">⑥</span> 업로드·큐</td><td>원본 보관 후 대기열에 넣고 즉시 접수 응답</td><td>피크 흡수, 사용자는 기다리지 않음</td><td class="c">REST API, Kafka</td></tr>
+<tr><td class="k"><span class="n">⑥</span> 업로드·큐</td><td>원본 보관 후 대기열에 넣고 즉시 접수 응답</td><td>피크 흡수, 즉시 접수 응답</td><td class="c">REST API, Kafka</td></tr>
 <tr><td class="k"><span class="n">⑦</span> 서류 판독</td><td>이미지 품질 확인 → OCR·멀티모달 LLM으로 값 추출</td><td>사람 입력 대체</td><td class="c">사내 OCR, 멀티모달 LLM</td></tr>
 <tr><td class="k"><span class="n">⑧</span> 교차 검증</td><td>합계 = 총액, 두 방법 값 일치, 서류 간 대조</td><td>오독 검출</td><td class="c">규칙 코드</td></tr>
-<tr><td class="k"><span class="n">⑨⑩</span> 저장·입력</td><td>값 + 파일·페이지·위치 + 모델 버전 저장 → 업무 처리의 입력값</td><td>어디서 무엇으로 읽었는지 추적</td><td class="c">PostgreSQL</td></tr>
+<tr><td class="k"><span class="n">⑨⑩</span> 저장·입력</td><td>값 + 위치 + 모델 버전 저장 → 업무 처리 입력</td><td>어디서 무엇으로 읽었는지 추적</td><td class="c">PostgreSQL</td></tr>
 <tr><th colspan="4" class="grp">업무 DB (예: 계약·주문) · 처리 이력 (예: 심사·상담 결과) · 같은 기간계에서 수집</th></tr>
-<tr><td class="k"><span class="n">⑪</span> 변경분 복제</td><td>바뀐 행만 복사 → 스테이징(단기)</td><td>원천 부하 최소, 원본은 원천이 관리</td><td class="c">Debezium(CDC), 일 배치</td></tr>
-<tr><td class="k"><span class="n">⑫</span> 형식 맞추기</td><td>목표 스키마로 변환</td><td>항상 같은 결과 → AI 쓰지 않음</td><td class="c">SQL, dbt</td></tr>
-<tr><td class="k"><span class="n">⑬</span> 대조 검사</td><td>건수·합계를 원본과 비교</td><td>원본이 정확하므로 직접 비교 가능</td><td class="c">검증 규칙</td></tr>
-<tr><td class="k"><span class="n">⑭⑮</span> 업무 데이터·조회</td><td>조회용 사본, 에이전트 조회 도구. 판단 직전에는 원천 직접 조회</td><td>숫자·상태는 검색이 아니라 조회, 복제 시차 보완</td><td class="c">데이터 마트, 도구 API·MCP</td></tr>
-<tr><td class="k"><span class="n">⑯</span> 분류·연결</td><td>자유 메모 → 사유 코드(LLM), 당시 서류·문서 버전과 연결</td><td>평가에 쓰려면 정형화와 당시 맥락 필요</td><td class="c">소형 LLM</td></tr>
+<tr><td class="k"><span class="n">⑪</span> 변경분 복제</td><td>바뀐 행만 복사 → 스테이징(단기)</td><td>원천 시스템 부하 최소</td><td class="c">Debezium(CDC), 일 배치</td></tr>
+<tr><td class="k"><span class="n">⑫</span> 형식 맞추기</td><td>목표 스키마로 변환</td><td>늘 같은 결과 → AI 안 씀</td><td class="c">SQL, dbt</td></tr>
+<tr><td class="k"><span class="n">⑬</span> 대조 검사</td><td>건수·합계를 원본과 비교</td><td>원본과 직접 비교 가능</td><td class="c">검증 규칙</td></tr>
+<tr><td class="k"><span class="n">⑭⑮</span> 업무 데이터·조회</td><td>조회용 사본·조회 도구, 판단 직전엔 원천 조회</td><td>정확한 값은 검색 말고 조회</td><td class="c">데이터 마트, 도구 API·MCP</td></tr>
+<tr><td class="k"><span class="n">⑯</span> 분류·연결</td><td>메모 → 사유 코드(LLM), 당시 버전과 연결</td><td>평가에 쓸 형태와 맥락</td><td class="c">소형 LLM</td></tr>
 <tr><td class="k"><span class="n">⑰</span> 사람 검수</td><td>분류 확인, 의견이 갈리면 2인 합의, 유형 편중 확인</td><td>정답 데이터는 사람이 확정</td><td class="c">검수 화면</td></tr>
-<tr><td class="k"><span class="n">⑱⑲</span> 평가 데이터·실행</td><td>정답·사람 수정 이력(비식별) → 변경 시 회귀 평가</td><td>품질 측정, 나빠지면 배포 차단</td><td class="c">평가 파이프라인</td></tr>
+<tr><td class="k"><span class="n">⑱⑲</span> 평가 데이터·실행</td><td>정답·사람 수정 이력(비식별) → 변경 시 회귀 평가</td><td>나빠지면 배포 차단</td><td class="c">평가 파이프라인</td></tr>
 <tr><th colspan="4" class="grp">공통</th></tr>
 <tr><td class="k">원본 보관</td><td>원본 파일은 영구(고치지 않음), 정형 사본은 단기</td><td>재처리·감사의 기준</td><td class="c">S3 호환(MinIO)</td></tr>
-<tr><td class="k">통과 판정</td><td>기준값 비교 → 저장 / 격리(그 건만 사람) / 차단(적재 중단)</td><td>AI 결과는 검증 후에만 저장</td><td class="c">판정 규칙</td></tr>
-<tr><td class="k">실행·이력·보안·지표</td><td>재시도, 데이터 이력(원천·실행·버전), 수집 시 민감정보 분류·대체값, 누락률·분포 변화 알림</td><td>추적·보안·이상 감지를 한 번에</td><td class="c">Airflow, OpenLineage, Vault·KMS, Grafana</td></tr>
+<tr><td class="k">통과 판정</td><td>기준값 비교 → 저장 / 격리(사람) / 차단</td><td>AI 결과는 검증 후에만 저장</td><td class="c">판정 규칙</td></tr>
+<tr><td class="k">실행·이력·보안·지표</td><td>재시도, 데이터 이력, 민감정보 대체값, 품질 알림</td><td>한 번 만들어 모두 사용</td><td class="c">Airflow, OpenLineage, Vault·KMS, Grafana</td></tr>
 </table>
-<div class="key">형태는 수집·가공 방법을, 쓰임새는 검증 기준과 저장·제공 방식을 정한다. 업무 DB와 처리 이력은 형태가 같아 수집이 같고, 쓰임새(사실 조회 / 정답 데이터)가 달라 가공부터 갈라진다. 숫자·상태처럼 정확해야 하는 값은 RAG가 아니라 조회로.</div>
 
 <h3>다른 업무에 적용하기: 형태 × 쓰임새</h3>
 <div class="cols">
@@ -306,29 +324,37 @@ svg.arch .ah.hot { fill: var(--accent); }
 <tr><td class="k">정답·피드백</td><td>사람 검수·합의 · 평가 데이터 · 평가 실행</td></tr>
 </table>
 </div>
-<div class="key">원천마다 (형태, 쓰임새)를 정해 칸을 채운다. 다섯 단계 열과 공통 띠는 원천이 하나여도 유지. 같은 PDF라도 사내 규정은 "근거", 검토할 계약서는 "처리 입력". 검증 칸에는 그 업무만의 규칙을 하나 넣는다(예: 세금계산서 공급가액 + 세액 = 합계). 정답·피드백 줄은 요구에 없어도 거의 항상 추가.</div>
+<div class="key">형태는 수집·가공을, 쓰임새는 검증·저장·제공을 정한다. 원천마다 (형태, 쓰임새)를 정해 칸을 채운다. 다섯 단계 열과 공통 띠는 원천이 하나여도 유지. 같은 PDF라도 사내 규정은 "근거", 검토할 계약서는 "처리 입력". 검증 칸에는 그 업무만의 규칙을 하나 넣는다(예: 세금계산서 공급가액 + 세액 = 합계). 정답·피드백 줄은 요구에 없어도 거의 항상 추가.</div>
 
 <h3>근거 데이터 모델</h3>
 <figure>
-<svg class="arch" viewBox="0 0 760 210" role="img" aria-label="판단은 근거와 입력값을 ID로 참조하고, 근거는 버전에 묶인 인용 단위를, 입력값은 출처가 붙은 추출값을 가리킨다">
-<defs><marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
-<marker id="m2h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="b store" x="10" y="8" width="170" height="58"/><text class="t" x="95" y="25">문서</text><text class="s" x="95" y="41">문서 ID · 원본 고유값</text><text class="s" x="95" y="56">출처 · 등록일</text>
-<rect class="b store" x="220" y="8" width="170" height="58"/><text class="t" x="305" y="25">버전</text><text class="s" x="305" y="41">버전 ID · 대상(예: 상품)</text><text class="s" x="305" y="56">시행일 ~ 종료일</text>
-<rect class="b store" x="430" y="8" width="170" height="58"/><text class="t" x="515" y="25">인용 단위 (조·절)</text><text class="s" x="515" y="41">본문 · 페이지 · 위치</text><text class="s" x="515" y="56">종류 · 본문 고유값</text>
-<rect class="b store" x="10" y="120" width="170" height="58"/><text class="t" x="95" y="137">추출값</text><text class="s" x="95" y="153">값 · 파일 · 페이지 위치</text><text class="s" x="95" y="168">추출 방식 · 모델 버전</text>
-<rect class="b app" x="220" y="120" width="170" height="58"/><text class="t" x="305" y="137">판단·답변</text><text class="s" x="305" y="153">결과 · 사유 · 사람 조치</text><text class="s" x="305" y="168">모델·프롬프트·규칙 버전</text>
-<rect class="b store" x="430" y="120" width="170" height="58"/><text class="t" x="515" y="137">근거</text><text class="s" x="515" y="153">판단 ID · 인용 단위 ID</text><text class="s" x="515" y="168">인용 문장 · 역할</text>
-<rect class="b store" x="630" y="120" width="120" height="58"/><text class="t" x="690" y="137">판단 당시 기록</text><text class="s" x="690" y="153">입력·근거 복사본</text><text class="s" x="690" y="168">추가만 가능</text>
-<path class="f" d="M180 37 H220" marker-end="url(#m2)"/><text class="e" x="200" y="31">1 : N</text>
-<path class="f" d="M390 37 H430" marker-end="url(#m2)"/><text class="e" x="410" y="31">1 : N</text>
-<path class="f hot" d="M390 149 H430" marker-end="url(#m2h)"/><text class="e" x="410" y="143">근거</text>
-<path class="f" d="M220 149 H180" marker-end="url(#m2)"/><text class="e" x="200" y="143">입력</text>
-<path class="f hot" d="M515 120 V66" marker-end="url(#m2h)"/><text class="e l" x="523" y="90">ID로 참조</text><text class="e l hot" x="523" y="106">원문 그대로 설명</text>
-<path class="f async" d="M305 178 V196 H690 V178" marker-end="url(#m2)"/><text class="e" x="500" y="192">판단할 때 복사</text>
-<text class="e hot" x="305" y="84">기준일로 코드에서 확정</text>
-<text class="e hot" x="95" y="196">어디서·무엇으로 읽었나</text>
+<svg class="arch" viewBox="0 0 760 236" role="img" aria-label="설명할 판단에서 시작해 근거를 따라가면 인용 단위, 문서 버전을 거쳐 원본 문서에, 입력을 따라가면 추출값을 거쳐 원본 서류에 닿고, 판단할 때 당시 기록을 복사해 둔다">
+<defs><marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="m2h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="zt c" x="85" y="20">시작</text><text class="e" x="465" y="20">가리키는 방향을 따라가면 →</text><text class="zt c" x="678" y="20">끝: 원본</text>
+<rect class="b app" x="10" y="30" width="150" height="198"/><text class="t" x="85" y="118">판단·답변</text><text class="s" x="85" y="136">설명할 대상</text><text class="s" x="85" y="152">결과·사유·사용 버전</text>
+<rect class="b store" x="190" y="30" width="124" height="46"/><text class="t" x="252" y="49">근거</text><text class="s" x="252" y="65">인용 문장 · 역할</text>
+<rect class="b store" x="332" y="30" width="124" height="46"/><text class="t" x="394" y="49">인용 단위 (조·절)</text><text class="s" x="394" y="65">본문·페이지·위치</text>
+<rect class="b store" x="474" y="30" width="124" height="46"/><text class="t" x="536" y="49">문서 버전</text><text class="s" x="536" y="65">시행일 ~ 종료일</text>
+<rect class="b store" x="616" y="30" width="124" height="46"/><text class="t" x="678" y="49">원본 문서</text><text class="s" x="678" y="65">원본 저장소 파일</text>
+<rect class="b store" x="190" y="106" width="124" height="46"/><text class="t" x="252" y="125">사용한 입력</text><text class="s" x="252" y="141">판단 ↔ 추출값</text>
+<rect class="b store" x="332" y="106" width="266" height="46"/><text class="t" x="465" y="125">추출값</text><text class="s" x="465" y="141">값 · 파일·페이지 위치 · 추출 방식·모델 버전</text>
+<rect class="b store" x="616" y="106" width="124" height="46"/><text class="t" x="678" y="125">원본 서류</text><text class="s" x="678" y="141">원본 저장소 파일</text>
+<rect class="b store" x="190" y="182" width="550" height="46"/><text class="t" x="465" y="201">판단 당시 기록 (추가만 가능)</text><text class="s" x="465" y="217">입력값·근거 인용문·버전·사람 조치를 판단할 때 복사 → 나중에도 그대로 재현</text>
+<path class="f hot" d="M160 53 H190" marker-end="url(#m2h)"/>
+<path class="f hot" d="M314 53 H332" marker-end="url(#m2h)"/>
+<path class="f hot" d="M456 53 H474" marker-end="url(#m2h)"/>
+<path class="f hot" d="M598 53 H616" marker-end="url(#m2h)"/>
+<text class="e" x="175" y="46">근거</text>
+<path class="f" d="M160 129 H190" marker-end="url(#m2)"/>
+<path class="f" d="M314 129 H332" marker-end="url(#m2)"/>
+<path class="f" d="M598 129 H616" marker-end="url(#m2)"/>
+<text class="e" x="175" y="122">입력</text>
+<path class="f async" d="M160 205 H190" marker-end="url(#m2)"/><text class="e" x="175" y="198">복사</text>
+<text class="e hot" x="394" y="92">원문 그대로 설명</text>
+<text class="e hot" x="536" y="92">기준일로 코드에서 확정</text>
+<text class="e hot" x="465" y="168">어디서·무엇으로 읽었나</text>
 </svg>
+<figcaption>화살표는 모두 "무엇을 가리키는가(ID 참조)". 판단에서 시작해 따라가면 원본에 닿습니다. 만들어지는 순서는 반대: 문서·버전·인용 단위는 미리(①~④), 추출값은 서류가 들어올 때(⑥~⑨), 판단·근거·입력·당시 기록은 판단하는 순간.</figcaption>
 </figure>
 <div class="cols">
 <div class="box"><h4>인용 단위와 버전 맞추기</h4><ul>
@@ -413,60 +439,88 @@ svg.arch .ah.hot { fill: var(--accent); }
 <div class="summary"><b>무엇에 대한 장인가</b> AI가 업무를 처리하는 실행 구조. 정해진 워크플로우가 단계를 지휘하고, LLM은 단계 안에서 판단을 제안하며, RAG로 근거를 찾아 인용한다. <b>핵심</b> 자율성은 대화·탐색에만, 쓰기 도구는 검증·승인 후에만, 모든 LLM 호출은 게이트웨이로, 계산은 코드로.</div>
 <h3>블록 구성</h3>
 <figure>
-<svg class="arch" viewBox="0 0 760 304" role="img" aria-label="에이전트 실행, 도구, LLM 플랫폼, RAG, 운영·연계의 다섯 블록과 각 블록의 구성 요소">
+<svg class="arch" viewBox="0 0 760 450" role="img" aria-label="대화 에이전트와 업무 워크플로우가 각각 도구, LLM 접근, RAG 세 블록의 입구를 부르고, 쓰기는 워크플로우만 연계 어댑터를 거쳐 기간계로 보낸다">
 <defs><marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
-<marker id="m3h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="zone" x="4" y="4" width="752" height="56" rx="8"/><text class="zt" x="14" y="37">에이전트 실행</text>
-<rect class="zone" x="4" y="64" width="752" height="56" rx="8"/><text class="zt" x="14" y="97">도구</text>
-<rect class="zone" x="4" y="124" width="752" height="56" rx="8"/><text class="zt" x="14" y="157">LLM 플랫폼</text>
-<rect class="zone" x="4" y="184" width="752" height="56" rx="8"/><text class="zt" x="14" y="217">RAG</text>
-<rect class="zone" x="4" y="244" width="752" height="56" rx="8"/><text class="zt" x="14" y="277">운영·연계</text>
-
-<rect class="b ai" x="96" y="11" width="158" height="42"/><text class="t" x="175" y="29">① 대화 에이전트</text><text class="s" x="175" y="44">응대·정보 수집·UI 요청</text>
-<rect class="b app" x="260" y="11" width="158" height="42"/><text class="t" x="339" y="29">② 업무 워크플로우</text><text class="s" x="339" y="44">정해진 단계 (Temporal)</text>
-<rect class="b store" x="424" y="11" width="158" height="42"/><text class="t" x="503" y="29">③ 상태 저장소</text><text class="s" x="503" y="44">체크포인트·재개</text>
-<rect class="b human" x="588" y="11" width="158" height="42"/><text class="t" x="667" y="29">④ 사람 승인</text><text class="s" x="667" y="44">되돌릴 수 없는 행동 전</text>
-
-<rect class="b app" x="96" y="71" width="158" height="42"/><text class="t" x="175" y="89">⑤ 읽기 도구</text><text class="s" x="175" y="104">조회·검색, 자유 호출</text>
-<rect class="b app" x="260" y="71" width="158" height="42"/><text class="t" x="339" y="89">⑥ 쓰기 도구</text><text class="s" x="339" y="104">승인 토큰·멱등 키</text>
-<rect class="b app" x="424" y="71" width="158" height="42"/><text class="t" x="503" y="89">⑦ 규칙 엔진</text><text class="s" x="503" y="104">계산·한도 (코드)</text>
-<rect class="b app" x="588" y="71" width="158" height="42"/><text class="t" x="667" y="89">⑧ MCP 게이트웨이</text><text class="s" x="667" y="104">권한 위임·도구 노출</text>
-
-<rect class="b ai" x="96" y="131" width="158" height="42"/><text class="t" x="175" y="149">⑨ LLM 게이트웨이</text><text class="s" x="175" y="164">라우팅·가리기·한도</text>
-<rect class="b ai" x="260" y="131" width="158" height="42"/><text class="t" x="339" y="149">⑩ 모델 서빙</text><text class="s" x="339" y="164">⑨ 뒤에서만 호출 (vLLM)</text>
-<rect class="b app" x="424" y="131" width="158" height="42"/><text class="t" x="503" y="149">⑪ 프롬프트 관리</text><text class="s" x="503" y="164">버전·캐싱</text>
-<rect class="b cross" x="588" y="131" width="158" height="42"/><text class="t" x="667" y="149">⑫ 가드레일</text><text class="s" x="667" y="164">형식 강제·지시문 탐지</text>
-
-<rect class="b app" x="96" y="191" width="158" height="42"/><text class="t" x="175" y="209">⑬ 인덱싱</text><text class="s" x="175" y="224">조각·메타데이터·임베딩</text>
-<rect class="b app" x="260" y="191" width="158" height="42"/><text class="t" x="339" y="209">⑭ 검색 서비스</text><text class="s" x="339" y="224">필터·하이브리드·리랭크</text>
-<rect class="b store" x="424" y="191" width="158" height="42"/><text class="t" x="503" y="209">⑮ 검색 색인</text><text class="s" x="503" y="224">BM25 + 벡터</text>
-<rect class="b app" x="588" y="191" width="158" height="42"/><text class="t" x="667" y="209">⑯ 근거 검증</text><text class="s" x="667" y="224">인용문 원문 대조</text>
-
-<rect class="b cross" x="96" y="251" width="158" height="42"/><text class="t" x="175" y="269">⑰ 관측</text><text class="s" x="175" y="284">OTel·Langfuse</text>
-<rect class="b cross" x="260" y="251" width="158" height="42"/><text class="t" x="339" y="269">⑱ 평가</text><text class="s" x="339" y="284">골든셋·LLM 평가자</text>
-<rect class="b app" x="424" y="251" width="158" height="42"/><text class="t" x="503" y="269">⑲ 메시지 큐</text><text class="s" x="503" y="284">Kafka</text>
-<rect class="b app" x="588" y="251" width="158" height="42"/><text class="t" x="667" y="269">⑳ 연계 어댑터</text><text class="s" x="667" y="284">기간계 호출·재시도</text>
-
-<path class="f" d="M175 53 V71" marker-end="url(#m3)"/><text class="e l" x="183" y="66">조회</text>
-<path class="f hot" d="M339 53 V71" marker-end="url(#m3h)"/><text class="e l hot" x="347" y="66">검증·승인 후만</text>
+<marker id="m3h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0 0L10 5L0 10z"/></marker><marker id="m3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah by1" d="M0 0L10 5L0 10z"/></marker><marker id="m3b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah by2" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="zone" x="4" y="22" width="752" height="154" rx="8"/><text class="zt" x="14" y="39">실행</text><text class="zl" x="746" y="39">애플리케이션 계층</text>
+<rect class="b ai" x="14" y="48" width="120" height="120"/><text class="t" x="74" y="88">① 대화 에이전트</text><text class="s" x="74" y="106">응대·정보 수집</text><text class="s" x="74" y="121">화면 요소 요청</text><text class="s" x="74" y="136">업무 판단은 안 함</text>
+<rect class="b app" x="150" y="48" width="440" height="120"/><text class="t" x="370" y="68">② 업무 워크플로우 (정해진 단계)</text>
+<polygon class="chev" points="160,78 222,78 229,100 222,122 160,122 167,100"/><text class="ct" x="198" y="97">조회</text><text class="cn" x="198" y="113">⑦</text>
+<polygon class="chev" points="230,78 292,78 299,100 292,122 230,122 237,100"/><text class="ct" x="268" y="97">근거 검색</text><text class="cn" x="268" y="113">⑬</text>
+<polygon class="chev ai" points="300,78 362,78 369,100 362,122 300,122 307,100"/><text class="ct" x="338" y="97">판단 제안</text><text class="cn" x="338" y="113">⑨</text>
+<polygon class="chev" points="370,78 432,78 439,100 432,122 370,122 377,100"/><text class="ct" x="408" y="97">검증·계산</text><text class="cn" x="408" y="113">⑭ ③</text>
+<polygon class="chev" points="440,78 502,78 509,100 502,122 440,122 447,100"/><text class="ct" x="478" y="97">분기</text><text class="cn" x="478" y="113">⑤</text>
+<polygon class="chev" points="510,78 572,78 579,100 572,122 510,122 517,100"/><text class="ct" x="548" y="97">실행</text><text class="cn" x="548" y="113">⑧</text>
+<text class="s" x="370" y="141">LLM은 판단 제안만, 확정은 규칙(③)과 사람(⑤)</text>
+<text class="s" x="370" y="157">쓰기(⑧)는 검증·승인을 통과한 뒤 마지막에 한 번</text>
+<rect class="b app" x="610" y="48" width="136" height="36"/><text class="t" x="678" y="64">③ 규칙 엔진</text><text class="s" x="678" y="78">계산·한도·자격 (코드)</text>
+<rect class="b store" x="610" y="90" width="136" height="36"/><text class="t" x="678" y="106">④ 상태 저장소</text><text class="s" x="678" y="120">단계마다 저장·재개</text>
+<rect class="b human" x="610" y="132" width="136" height="36"/><text class="t" x="678" y="148">⑤ 사람 승인</text><text class="s" x="678" y="162">되돌릴 수 없는 일 전</text>
+<rect class="zone" x="4" y="218" width="220" height="132" rx="8"/><text class="zt" x="14" y="235">도구</text><text class="zl" x="170" y="235">애플리케이션 계층</text>
+<rect class="b app" x="12" y="244" width="204" height="38"/><text class="t" x="114" y="260">⑥ 도구 게이트웨이 (MCP)</text><text class="s" x="114" y="274">권한·승인 토큰 검사·기록</text>
+<rect class="b app" x="12" y="304" width="99" height="38"/><text class="t" x="61.5" y="320">⑦ 읽기 도구</text><text class="s" x="61.5" y="334">업무 데이터 조회</text>
+<rect class="b app" x="117" y="304" width="99" height="38"/><text class="t" x="166.5" y="320">⑧ 쓰기 도구</text><text class="s" x="166.5" y="334">승인 토큰 필요</text>
+<rect class="zone" x="232" y="218" width="284" height="132" rx="8"/><text class="zt" x="242" y="235">LLM 접근</text><text class="zl" x="506" y="235">AI 플랫폼 계층</text>
+<rect class="b ai" x="240" y="244" width="268" height="38"/><text class="t" x="374" y="260">⑨ LLM 게이트웨이 (모든 호출의 입구)</text><text class="s" x="374" y="274">라우팅·민감정보 가리기·한도·기록</text>
+<rect class="b ai" x="240" y="304" width="85" height="38"/><text class="t" x="282.5" y="320">⑩ 모델 서빙</text><text class="s" x="282.5" y="334">⑨만 호출</text>
+<rect class="b app" x="331" y="304" width="86" height="38"/><text class="t" x="374" y="320">⑪ 프롬프트</text><text class="s" x="374" y="334">버전·캐싱</text>
+<rect class="b cross" x="423" y="304" width="85" height="38"/><text class="t" x="465.5" y="320">⑫ 가드레일</text><text class="s" x="465.5" y="334">입출력 검사</text>
+<rect class="zone" x="524" y="218" width="232" height="132" rx="8"/><text class="zt" x="534" y="235">RAG</text><text class="zl" x="746" y="235">AI 플랫폼·데이터 계층</text>
+<rect class="b app" x="532" y="244" width="216" height="38"/><text class="t" x="640" y="260">⑬ RAG 서비스</text><text class="s" x="640" y="274">검색 API · 인용 대조 API</text>
+<rect class="b app" x="532" y="304" width="90" height="38"/><text class="t" x="577" y="320">⑭ 근거 검증</text><text class="s" x="577" y="334">인용문 원문 대조</text>
+<rect class="b store" x="628" y="304" width="120" height="38"/><text class="t" x="688" y="320">⑮ 검색 색인</text><text class="s" x="688" y="334">2장 ①~④가 채움</text>
+<rect class="zone" x="4" y="374" width="380" height="72" rx="8"/><text class="zt" x="14" y="391">연계</text>
+<rect class="b app" x="12" y="400" width="88" height="38"/><text class="t" x="56" y="416">⑯ 메시지 큐</text><text class="s" x="56" y="430">접수 이벤트</text>
+<rect class="b app" x="106" y="400" width="121" height="38"/><text class="t" x="166.5" y="416">⑰ 연계 어댑터</text><text class="s" x="166.5" y="430">멱등 키·재시도</text>
+<rect class="b ext" x="246" y="400" width="128" height="38"/><text class="t" x="310" y="416">기간계 (외부)</text><text class="s" x="310" y="430">핵심 업무 처리</text>
+<rect class="zone" x="392" y="374" width="364" height="72" rx="8"/><text class="zt" x="402" y="391">공통</text><text class="zl" x="746" y="391">모든 계층</text>
+<rect class="b cross" x="400" y="400" width="170" height="38"/><text class="t" x="485" y="416">⑱ 관측</text><text class="s" x="485" y="430">요청 번호로 모든 호출 추적</text>
+<rect class="b cross" x="578" y="400" width="170" height="38"/><text class="t" x="663" y="416">⑲ 평가</text><text class="s" x="663" y="430">변경마다 골든셋 회귀</text>
+<text class="e" x="74" y="12">대화 요청 (접점·BFF)</text>
+<path class="f" d="M74 16 V48" marker-end="url(#m3)"/>
+<text class="e" x="198" y="12">접수 이벤트 (⑯ 큐)</text>
+<path class="f async" d="M198 16 V48" marker-end="url(#m3)"/>
+<path class="f by2" d="M590 66 H610" marker-end="url(#m3b)"/>
+<path class="f by2" d="M590 108 H610" marker-end="url(#m3b)"/>
+<path class="f by2" d="M590 150 H610" marker-end="url(#m3b)"/>
+<path class="f by1" d="M50 168 V244" marker-end="url(#m3a)"/>
+<path class="f by1" d="M85 168 V198 H176 a4 4 0 0 1 8 0 H304 V244" marker-end="url(#m3a)"/>
+<path class="f by1" d="M115 168 V184 H176 a4 4 0 0 1 8 0 H396 a4 4 0 0 1 8 0 H566 V244" marker-end="url(#m3a)"/>
+<path class="f by2" d="M180 168 V244" marker-end="url(#m3b)"/>
+<path class="f by2" d="M400 168 V244" marker-end="url(#m3b)"/>
+<path class="f by2" d="M582 168 V244" marker-end="url(#m3b)"/>
+<text class="e l by1" x="604" y="190">보라 선: ①이 부름</text>
+<text class="e l by2" x="604" y="205">파랑 선: ②가 부름</text>
+<path class="f" d="M61.5 282 V304" marker-end="url(#m3)"/>
+<text class="e l" x="67" y="297">①② 가능</text>
+<path class="f hot" d="M166.5 282 V304" marker-end="url(#m3h)"/>
+<text class="e l hot" x="173" y="297">②만</text>
+<path class="f hot" d="M282.5 282 V304" marker-end="url(#m3h)"/>
+<path class="f" d="M374 282 V304" marker-end="url(#m3)"/>
+<path class="f" d="M465.5 282 V304" marker-end="url(#m3)"/>
+<path class="f" d="M577 282 V304" marker-end="url(#m3)"/>
+<path class="f" d="M688 282 V304" marker-end="url(#m3)"/>
+<path class="f hot" d="M166.5 342 V400" marker-end="url(#m3h)"/>
+<text class="e l hot" x="172" y="365">실행 요청</text>
+<path class="f hot" d="M227 419 H246" marker-end="url(#m3h)"/>
 </svg>
-<figcaption>가로 줄은 블록(역할 묶음)이고 열은 짝이 아닙니다. 대화 에이전트(①)는 읽기 도구만 쓰고, 쓰기 도구(⑥)는 검증·승인을 통과한 워크플로우(②)만 부릅니다. 모든 LLM 호출은 ⑨를 거칩니다.</figcaption>
+<figcaption>선 색은 부르는 쪽입니다(보라 ①, 파랑 ②). ①과 ② 모두 세 블록의 입구(⑥·⑨·⑬)를 직접 부르고, 쓰기 도구(⑧)는 입구 ⑥이 승인 토큰을 확인해 ②만 통과시킵니다. 반원은 선이 연결 없이 넘어가는 곳입니다. 아래 블록은 응답만 돌려주고, 모델(⑩)은 ⑨ 뒤에만 있습니다. ② 안의 단계 밑 번호는 그 단계가 부르는 요소입니다.</figcaption>
 </figure>
 <table>
 <tr><th>요소</th><th>하는 일</th><th>왜</th><th>기술 예</th></tr>
 <tr><td class="k"><span class="n">①</span> 대화 에이전트</td><td>사용자 응대, 정보 수집, 화면 요소 요청</td><td>대화만 자율, 업무 판단은 하지 않음</td><td class="c">LangGraph</td></tr>
-<tr><td class="k"><span class="n">②</span> 업무 워크플로우</td><td>정해진 단계: 추출 → 조회 → 검색 → 판단 제안 → 검증 → 분기</td><td>재현·감사·비용 예측</td><td class="c">Temporal, LangGraph</td></tr>
-<tr><td class="k"><span class="n">③</span> 상태 저장소</td><td>단계마다 체크포인트</td><td>멈춘 곳부터 재개, 며칠 대기 가능</td><td class="c">PostgreSQL, Redis</td></tr>
-<tr><td class="k"><span class="n">④</span> 사람 승인</td><td>되돌릴 수 없는 행동·불리한 결과 전 확인</td><td>책임·규제, 오류 차단</td><td class="c">담당자 화면</td></tr>
-<tr><td class="k"><span class="n">⑤⑥</span> 읽기·쓰기 도구</td><td>읽기는 자유 호출 / 쓰기는 1회용 승인 토큰 + 멱등 키</td><td>부수효과 있는 행동만 막으면 됨</td><td class="c">REST, MCP</td></tr>
-<tr><td class="k"><span class="n">⑦</span> 규칙 엔진</td><td>계산·한도·자격 판정</td><td>LLM에 계산을 맡기지 않음</td><td class="c">규칙 코드</td></tr>
-<tr><td class="k"><span class="n">⑧</span> MCP 게이트웨이</td><td>도구 연결 표준화, 사용자 권한으로만 실행, 단계별 노출, 호출 기록</td><td>권한 과다·도구 과다 방지</td><td class="c">MCP 서버</td></tr>
+<tr><td class="k"><span class="n">②</span> 업무 워크플로우</td><td>정해진 단계: 조회 → 근거 검색 → 판단 제안 → 검증·계산 → 분기 → 실행</td><td>재현·감사·비용 예측</td><td class="c">Temporal, LangGraph</td></tr>
+<tr><td class="k"><span class="n">③</span> 규칙 엔진</td><td>계산·한도·자격 판정</td><td>LLM에 계산을 맡기지 않음</td><td class="c">규칙 코드</td></tr>
+<tr><td class="k"><span class="n">④</span> 상태 저장소</td><td>단계마다 체크포인트</td><td>멈춘 곳부터 재개, 며칠 대기 가능</td><td class="c">PostgreSQL, Redis</td></tr>
+<tr><td class="k"><span class="n">⑤</span> 사람 승인</td><td>되돌릴 수 없는 행동·불리한 결과 전 확인</td><td>책임·규제, 오류 차단</td><td class="c">담당자 화면</td></tr>
+<tr><td class="k"><span class="n">⑥</span> 도구 게이트웨이</td><td>도구 연결 표준화, 사용자 권한으로만 실행, 단계별 노출, 쓰기는 승인 토큰 확인, 호출 기록</td><td>권한 과다·도구 과다 방지</td><td class="c">MCP 서버</td></tr>
+<tr><td class="k"><span class="n">⑦⑧</span> 읽기·쓰기 도구</td><td>읽기는 자유 호출 / 쓰기는 1회용 승인 토큰 + 멱등 키</td><td>부수효과 있는 행동만 막으면 됨</td><td class="c">REST, MCP</td></tr>
 <tr><td class="k"><span class="n">⑨⑩</span> 게이트웨이·서빙</td><td>모델 선택(작은 모델 분류, 큰 모델 판단), 가리기, 한도, 장애 시 대체 모델</td><td>보안·비용·교체를 한곳에서</td><td class="c">LiteLLM, vLLM</td></tr>
 <tr><td class="k"><span class="n">⑪</span> 프롬프트 관리</td><td>버전 관리, 고정 앞부분 캐싱</td><td>재현·회귀 평가, 비용·지연↓</td><td class="c">Git, Langfuse</td></tr>
 <tr><td class="k"><span class="n">⑫</span> 가드레일</td><td>출력 형식 강제(스키마), 입력 속 지시문 탐지, 민감정보 가림</td><td>숨긴 지시·형식 오류 차단</td><td class="c">JSON Schema</td></tr>
-<tr><td class="k"><span class="n">⑬~⑯</span> RAG</td><td>구조 단위 색인, 조건 필터 → 하이브리드 → 리랭크, 인용 원문 대조</td><td>버전 혼동·누락·지어낸 근거 방지</td><td class="c">OpenSearch, 리랭커</td></tr>
-<tr><td class="k"><span class="n">⑰⑱</span> 관측·평가</td><td>요청 번호로 단계·LLM·도구 호출 추적, 변경 시 회귀 평가</td><td>원인 분석·재현, 품질 회귀 차단</td><td class="c">OpenTelemetry</td></tr>
-<tr><td class="k"><span class="n">⑲⑳</span> 큐·연계</td><td>접수 이벤트 전달, 기간계 호출·재시도·중복 방지</td><td>비동기, 중복 실행 방지</td><td class="c">Kafka, 어댑터</td></tr>
+<tr><td class="k"><span class="n">⑬~⑮</span> RAG</td><td>조건 필터 → 하이브리드 → 리랭크(⑬), 인용 원문 대조(⑭), 구조 단위 색인(⑮)</td><td>버전 혼동·누락·지어낸 근거 방지</td><td class="c">OpenSearch, 리랭커</td></tr>
+<tr><td class="k"><span class="n">⑯⑰</span> 큐·연계</td><td>접수 이벤트 전달, 기간계 호출·재시도·중복 방지</td><td>비동기, 중복 실행 방지</td><td class="c">Kafka, 어댑터</td></tr>
+<tr><td class="k"><span class="n">⑱⑲</span> 관측·평가</td><td>요청 번호로 단계·LLM·도구 호출 추적, 변경 시 회귀 평가</td><td>원인 분석·재현, 품질 회귀 차단</td><td class="c">OpenTelemetry</td></tr>
 </table>
 
 <h3>워크플로우와 에이전트 고르기</h3>
@@ -488,43 +542,54 @@ svg.arch .ah.hot { fill: var(--accent); }
 
 <h3>RAG 파이프라인</h3>
 <figure>
-<svg class="arch" viewBox="0 0 760 172" role="img" aria-label="인덱싱은 미리 배치로, 질의는 실시간으로 처리하며, 질의에서는 조건 필터를 먼저 걸고 마지막에 인용을 원문과 대조한다">
+<svg class="arch" viewBox="0 0 760 274" role="img" aria-label="인덱싱은 검사를 통과한 조각을 근거 DB에 원본으로 저장하고 그 원본을 임베딩해 검색 색인을 만든다. 질의는 검색 색인에서 후보를 찾아 생성하고, 인용 검증은 근거 DB의 원본과 대조한다">
 <defs><marker id="m4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 <marker id="m4h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="zone" x="4" y="4" width="752" height="76" rx="8"/><text class="zt" x="14" y="21">인덱싱 (미리, 배치)</text>
-<rect class="b app" x="14" y="30" width="134" height="42"/><text class="t" x="81" y="48">수집·파싱</text><text class="s" x="81" y="63">레이아웃·표 보존</text>
-<rect class="b app" x="164" y="30" width="134" height="42"/><text class="t" x="231" y="48">조각내기</text><text class="s" x="231" y="63">구조 단위 + 상위 제목</text>
-<rect class="b app" x="314" y="30" width="134" height="42"/><text class="t" x="381" y="48">메타데이터 부착</text><text class="s" x="381" y="63">버전·시행일·권한</text>
-<rect class="b ai" x="464" y="30" width="134" height="42"/><text class="t" x="531" y="48">임베딩</text><text class="s" x="531" y="63">사내 임베딩 모델</text>
-<rect class="b store" x="614" y="30" width="134" height="42"/><text class="t" x="681" y="48">색인</text><text class="s" x="681" y="63">BM25 + 벡터</text>
-<path class="f" d="M148 51 H164" marker-end="url(#m4)"/>
-<path class="f" d="M298 51 H314" marker-end="url(#m4)"/>
-<path class="f" d="M448 51 H464" marker-end="url(#m4)"/>
-<path class="f" d="M598 51 H614" marker-end="url(#m4)"/>
-
-<rect class="zone" x="4" y="90" width="752" height="76" rx="8"/><text class="zt" x="14" y="107">질의 (실시간)</text>
-<rect class="b ai" x="14" y="116" width="92" height="42"/><text class="t" x="60" y="134">질의 재작성</text><text class="s" x="60" y="149">용어 정규화</text>
-<rect class="b app" x="120" y="116" width="92" height="42"/><text class="t" x="166" y="134">사전 필터</text><text class="s" x="166" y="149">버전·권한 조건</text>
-<rect class="b app" x="226" y="116" width="92" height="42"/><text class="t" x="272" y="134">하이브리드</text><text class="s" x="272" y="149">BM25+벡터·RRF</text>
-<rect class="b ai" x="332" y="116" width="92" height="42"/><text class="t" x="378" y="134">리랭킹</text><text class="s" x="378" y="149">상위 5~8개</text>
-<rect class="b app" x="438" y="116" width="92" height="42"/><text class="t" x="484" y="134">필수 조각</text><text class="s" x="484" y="149">정의·예외 조항</text>
-<rect class="b ai" x="544" y="116" width="92" height="42"/><text class="t" x="590" y="134">생성</text><text class="s" x="590" y="149">구조화·인용</text>
-<rect class="b app" x="650" y="116" width="92" height="42"/><text class="t" x="696" y="134">인용 검증</text><text class="s" x="696" y="149">원문 대조(코드)</text>
-<path class="f hot" d="M106 137 H120" marker-end="url(#m4h)"/>
-<path class="f" d="M212 137 H226" marker-end="url(#m4)"/>
-<path class="f" d="M318 137 H332" marker-end="url(#m4)"/>
-<path class="f" d="M424 137 H438" marker-end="url(#m4)"/>
-<path class="f" d="M530 137 H544" marker-end="url(#m4)"/>
-<path class="f hot" d="M636 137 H650" marker-end="url(#m4h)"/>
-<path class="f async soft" d="M681 72 V84 H272 V116" marker-end="url(#m4)"/>
+<circle class="usr" cx="34" cy="116" r="7"/><path class="usr" d="M21 140 Q21 127 34 127 Q47 127 47 140 Z"/>
+<text class="t" x="34" y="156">사용자</text>
+<rect class="b ai" x="74" y="26" width="121" height="50"/><text class="t" x="134.5" y="44">질의 재작성</text><text class="s" x="134.5" y="58">용어 정규화</text><text class="s" x="134.5" y="71">여러 질의로</text>
+<rect class="b app" x="209" y="26" width="121" height="50"/><text class="t" x="269.5" y="44">조건 검색</text><text class="s" x="269.5" y="58">사전 필터: 버전·권한</text><text class="s" x="269.5" y="71">하이브리드: BM25+벡터</text>
+<path class="store db" d="M332 102 V150 A40 8 0 0 0 412 150 V102"/><ellipse class="store db" cx="372" cy="102" rx="40" ry="8"/><text class="t" x="372" y="124">검색 색인</text><text class="s" x="372" y="138">벡터 + BM25</text><text class="s" x="372" y="151">사본</text>
+<path class="store db" d="M460 190 V238 A40 8 0 0 0 540 238 V190"/><ellipse class="store db" cx="500" cy="190" rx="40" ry="8"/><text class="t" x="500" y="212">근거 DB</text><text class="s" x="500" y="226">원본·버전</text><text class="s" x="500" y="239">새 버전만 추가</text>
+<rect class="b app" x="74" y="176" width="76" height="50"/><text class="t" x="112" y="194">인용 검증</text><text class="s" x="112" y="208">원문 대조</text><text class="s" x="112" y="221">코드로 확인</text>
+<rect class="b ai" x="164" y="176" width="76" height="50"/><text class="t" x="202" y="194">생성</text><text class="s" x="202" y="208">구조화 출력</text><text class="s" x="202" y="221">근거 ID 포함</text>
+<rect class="b ai" x="254" y="176" width="76" height="50"/><text class="t" x="292" y="194">후보 고르기</text><text class="s" x="292" y="208">리랭킹</text><text class="s" x="292" y="221">+ 필수 조각</text>
+<rect class="b ai" x="424" y="101" width="72" height="50"/><text class="t" x="460" y="119">임베딩</text><text class="s" x="460" y="133">사내 모델</text><text class="s" x="460" y="146">(질의도 동일)</text>
+<rect class="b app" x="508" y="101" width="72" height="50"/><text class="t" x="544" y="119">구조 검사</text><text class="s" x="544" y="133">누락률 확인</text><text class="s" x="544" y="146">통과만 다음</text>
+<rect class="b app" x="592" y="101" width="72" height="50"/><text class="t" x="628" y="119">조각내기</text><text class="s" x="628" y="133">조·절 단위</text><text class="s" x="628" y="146">+ 버전·권한</text>
+<rect class="b app" x="676" y="101" width="72" height="50"/><text class="t" x="712" y="119">수집·파싱</text><text class="s" x="712" y="133">원본 문서</text><text class="s" x="712" y="146">표·레이아웃</text>
+<path class="brk" d="M74 18 V12 H160.8 M243.2 12 H330 V18"/>
+<text class="bl" x="202.0" y="16">검색 (실시간)</text>
+<path class="f" d="M34 106 V51 H74" marker-end="url(#m4)"/>
+<text class="e l" x="40" y="84">질문</text>
+<path class="f" d="M195 51 H209" marker-end="url(#m4)"/>
+<path class="f hot" d="M330 51 H372 V92" marker-end="url(#m4h)"/>
+<path class="brk" d="M74 170 V164 H146.9 M257.1 164 H330 V170"/>
+<text class="bl" x="202.0" y="168">생성·검증 (실시간)</text>
+<path class="f" d="M352 157 V201 H330" marker-end="url(#m4)"/>
+<path class="f" d="M254 201 H240" marker-end="url(#m4)"/>
+<path class="f hot" d="M164 201 H150" marker-end="url(#m4h)"/>
+<path class="f" d="M74 201 H34 V162" marker-end="url(#m4)"/>
+<text class="e l" x="40" y="186">답변</text>
+<path class="f async soft" d="M500 246 V254 H112 V226" marker-end="url(#m4)"/>
+<text class="e" x="300" y="268">원문 (근거 ID로 근거 DB에서 조회)</text>
+<path class="brk" d="M424 92 V86 H498.5 M673.5 86 H748 V92"/>
+<text class="bl" x="586.0" y="90">인덱싱 (미리, 배치 · 2장 ①~④)</text>
+<path class="f" d="M676 126 H664" marker-end="url(#m4)"/>
+<path class="f" d="M592 126 H580" marker-end="url(#m4)"/>
+<path class="f hot" d="M530 151 V185" marker-end="url(#m4h)"/>
+<text class="e l hot" x="536" y="172">원본 저장</text>
+<path class="f" d="M470 185 V151" marker-end="url(#m4)"/>
+<text class="e r" x="464" y="172">원본에서 임베딩</text>
+<path class="f" d="M424 126 H412" marker-end="url(#m4)"/>
 </svg>
-<figcaption>위 줄(인덱싱)은 2장 규정 문서 줄 ①~④와 같은 일입니다. 아래 줄(질의)에서 질의 재작성~필수 조각은 검색 서비스(⑭, 2장 ⑤ 검색 API)가, 생성은 워크플로우(②)가 LLM 게이트웨이(⑨)를 거쳐, 인용 검증은 ⑯이 맡습니다.</figcaption>
+<figcaption>화살표는 데이터가 흐르는 방향입니다. 인덱싱(오른쪽)은 검사를 통과한 조각을 근거 DB에 원본으로 쌓고(고치지 않고 새 버전만 추가), 그 원본을 임베딩해 검색 색인을 만듭니다. 색인은 사본이라 모델·조각 방식을 바꾸면 다시 만듭니다. 질의(왼쪽)는 색인에서 조건 검색으로 후보를 받아 생성하고, 인용 검증은 근거 DB의 원본과 대조합니다. 사전 필터는 검색 뒤에 거르지 않고 검색 조건으로 함께 보냅니다. 인덱싱은 2장 ①~④, 검색·후보 고르기는 RAG 서비스(⑬), 생성은 워크플로우(②)가 LLM 게이트웨이(⑨)를 거쳐, 인용 검증은 ⑭가 맡습니다.</figcaption>
 </figure>
 <table>
 <tr><th>단계</th><th>기법</th><th>왜</th></tr>
 <tr><td class="k">조각내기</td><td>구조 단위(조·절) + 상위 제목 부착, 표는 별도</td><td>고정 길이는 조항을 끊음</td></tr>
 <tr><td class="k">사전 필터</td><td>기준일로 버전 확정(코드), 권한 조건</td><td>유사도로 버전 구분 불가, 권한 밖 문서 차단</td></tr>
-<tr><td class="k">하이브리드</td><td>BM25 + 벡터, 순위 합치기(RRF)</td><td>조항 번호·코드는 정확 일치, 표현 차이는 뜻 검색</td></tr>
+<tr><td class="k">하이브리드</td><td>BM25 + 벡터, 순위 합치기(RRF), 질의도 색인과 같은 임베딩 모델로</td><td>조항 번호·코드는 정확 일치, 표현 차이는 뜻 검색</td></tr>
 <tr><td class="k">질의 재작성</td><td>사용자 표현 → 문서 용어 (예: 디스크 → 추간판탈출증), 여러 질의</td><td>표현 차이로 검색 누락</td></tr>
 <tr><td class="k">리랭킹</td><td>상위 5~8개만 LLM에</td><td>많이 넣을수록 중간 내용 무시, 비용↑</td></tr>
 <tr><td class="k">필수 조각</td><td>정의·예외(면책) 조항은 점수와 무관하게 포함</td><td>예외 누락이 가장 위험</td></tr>
@@ -599,47 +664,69 @@ svg.arch .ah.hot { fill: var(--accent); }
 <div class="summary"><b>무엇에 대한 장인가</b> 에이전트가 대화 중에 필요한 화면 요소(달력·검색·요약 카드 등)를 띄우고, 사용자의 조작을 다시 받아 처리하는 화면 ↔ 서버 연동 구조. <b>핵심</b> 에이전트는 명세만 보내고 화면은 등록된 요소만 그리며, 조작은 문장이 아닌 구조화 이벤트로 돌아오고, 상태의 기준은 서버 하나다.</div>
 <h3>블록 구성</h3>
 <figure>
-<svg class="arch" viewBox="0 0 760 266" role="img" aria-label="서버의 에이전트가 요청한 UI 명세는 BFF에서 검증된 뒤 스트림으로 화면에 가고, 화면의 조작은 구조화 이벤트로 BFF를 거쳐 서버의 상태 관리에 반영된다">
+<svg class="arch" viewBox="0 0 760 264" role="img" aria-label="사용자가 말을 걸면 입력이 BFF를 거쳐 대화 에이전트로 가고, 에이전트의 UI 명세는 BFF 검증을 거쳐 스트림으로 화면에 그려진다. 사용자의 조작은 구조화 이벤트로 BFF 재검증을 거쳐 서버 상태에 반영되고, 에이전트는 상태 변경 알림을 받아 다음 응답을 한다">
 <defs><marker id="m5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 <marker id="m5h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="zone" x="4" y="4" width="240" height="254" rx="8"/><text class="zt" x="14" y="22">화면 (브라우저·앱)</text>
-<rect class="zone" x="260" y="4" width="240" height="254" rx="8"/><text class="zt" x="270" y="22">BFF (화면 전용 서버)</text>
-<rect class="zone" x="516" y="4" width="240" height="254" rx="8"/><text class="zt" x="526" y="22">서버 (에이전트·상태)</text>
-
-<rect class="b client" x="14" y="34" width="220" height="42"/><text class="t" x="124" y="52">① 스트림 수신</text><text class="s" x="124" y="67">SSE, 끊긴 번호부터 이어 받기</text>
-<rect class="b client" x="14" y="92" width="220" height="42"/><text class="t" x="124" y="110">② 렌더러</text><text class="s" x="124" y="125">등록된 요소만 그림</text>
-<rect class="b client" x="14" y="150" width="220" height="42"/><text class="t" x="124" y="168">③ 요소 목록 (레지스트리)</text><text class="s" x="124" y="183">달력·검색·목록·요약 카드</text>
-<rect class="b client" x="14" y="208" width="220" height="42"/><text class="t" x="124" y="226">④ 이벤트 송신</text><text class="s" x="124" y="241">조작 → {요소, 행동, 값}</text>
-
-<rect class="b app" x="270" y="34" width="220" height="42"/><text class="t" x="380" y="52">⑤ 스트림 중계</text><text class="s" x="380" y="67">이벤트마다 번호 부여</text>
-<rect class="b app" x="270" y="92" width="220" height="42"/><text class="t" x="380" y="110">⑥ 명세 검증</text><text class="s" x="380" y="125">JSON Schema·지원 요소</text>
-<rect class="b cross" x="270" y="150" width="220" height="42"/><text class="t" x="380" y="168">⑦ 인증·세션</text><text class="s" x="380" y="183">OIDC·지원 요소 협상</text>
-<rect class="b app" x="270" y="208" width="220" height="42"/><text class="t" x="380" y="226">⑧ 입력 재검증</text><text class="s" x="380" y="241">형식·권한·민감값 가림</text>
-
-<rect class="b ai" x="526" y="34" width="220" height="42"/><text class="t" x="636" y="52">⑨ 대화 에이전트</text><text class="s" x="636" y="67">LLM + UI 요청 도구</text>
-<rect class="b store" x="526" y="92" width="220" height="42"/><text class="t" x="636" y="110">⑩ 상태 관리</text><text class="s" x="636" y="125">단일 기준·버전 번호 (Redis·DB)</text>
-<rect class="b app" x="526" y="150" width="220" height="42"/><text class="t" x="636" y="168">⑪ 작업 큐·워커</text><text class="s" x="636" y="183">오래 걸리는 처리 (Kafka)</text>
-<rect class="b app" x="526" y="208" width="220" height="42"/><text class="t" x="636" y="226">⑫ 알림</text><text class="s" x="636" y="241">푸시·복귀 링크</text>
-
-<path class="f hot" d="M526 55 H513 V105 H490" marker-end="url(#m5h)"/>
-<path class="f hot" d="M380 92 V76" marker-end="url(#m5h)"/>
-<path class="f hot" d="M270 55 H234" marker-end="url(#m5h)"/><text class="e hot" x="252" y="49">SSE</text>
-<path class="f" d="M124 76 V92" marker-end="url(#m5)"/>
-<path class="f" d="M124 134 V150" marker-end="url(#m5)"/><text class="e l" x="132" y="146">요소 찾기</text>
-<path class="f" d="M124 192 V208" marker-end="url(#m5)"/><text class="e l" x="132" y="204">사용자 조작</text>
-<path class="f hot" d="M234 229 H270" marker-end="url(#m5h)"/><text class="e hot" x="252" y="223">POST</text>
-<path class="f hot" d="M490 229 H503 V121 H526" marker-end="url(#m5h)"/>
-<path class="f" d="M636 92 V76" marker-end="url(#m5)"/><text class="e l" x="644" y="88">상태 변경 알림</text>
-<path class="f" d="M636 150 V134" marker-end="url(#m5)"/><text class="e l" x="644" y="146">결과 반영</text>
-<path class="f" d="M636 192 V208" marker-end="url(#m5)"/><text class="e l" x="644" y="204">완료</text>
+<rect class="zone" x="76" y="4" width="224" height="188" rx="8"/><text class="zt" x="86" y="20">화면 (브라우저·앱)</text>
+<rect class="zone" x="326" y="4" width="210" height="188" rx="8"/><text class="zt" x="336" y="20">BFF (화면 전용 서버)</text>
+<rect class="zone" x="566" y="4" width="190" height="246" rx="8"/><text class="zt" x="576" y="20">서버 (에이전트·상태)</text>
+<circle class="usr" cx="34" cy="94" r="7"/><path class="usr" d="M21 120 Q21 106 34 106 Q47 106 47 120 Z"/><text class="t" x="34" y="136">사용자</text>
+<rect class="b ai" x="574" y="30" width="174" height="42"/><text class="t" x="661" y="47">⑨ 대화 에이전트</text><text class="s" x="661" y="61">의도 파악·UI 요청 도구</text>
+<rect class="b app" x="438" y="30" width="90" height="42"/><text class="t" x="483" y="47">⑥ 명세 검증</text><text class="s" x="483" y="61">스키마·지원 요소</text>
+<rect class="b app" x="334" y="30" width="90" height="42"/><text class="t" x="379" y="47">⑤ 스트림 중계</text><text class="s" x="379" y="61">번호 부여</text>
+<rect class="b client" x="198" y="30" width="94" height="42"/><text class="t" x="245" y="47">① 스트림 수신</text><text class="s" x="245" y="61">SSE·이어 받기</text>
+<rect class="b client" x="84" y="30" width="100" height="42"/><text class="t" x="134" y="47">② 렌더러</text><text class="s" x="134" y="61">등록된 요소만</text>
+<rect class="b client" x="84" y="88" width="100" height="36"/><text class="t" x="134" y="105">③ 요소 목록</text><text class="s" x="134" y="119">달력·검색·카드</text>
+<rect class="b client" x="84" y="140" width="120" height="42"/><text class="t" x="144" y="157">④ 입력 송신</text><text class="s" x="144" y="171">대화 글·조작 이벤트</text>
+<rect class="b cross" x="334" y="140" width="90" height="42"/><text class="t" x="379" y="157">⑦ 인증·세션</text><text class="s" x="379" y="171">로그인·세션</text>
+<rect class="b app" x="438" y="140" width="90" height="42"/><text class="t" x="483" y="157">⑧ 입력 재검증</text><text class="s" x="483" y="171">형식·권한·민감값</text>
+<rect class="b store" x="574" y="140" width="174" height="42"/><text class="t" x="661" y="157">⑩ 상태 관리</text><text class="s" x="661" y="171">단일 기준·버전 번호</text>
+<rect class="b app" x="574" y="200" width="106" height="42"/><text class="t" x="627" y="217">⑪ 작업 큐·워커</text><text class="s" x="627" y="231">오래 걸리는 처리</text>
+<rect class="b app" x="688" y="200" width="60" height="42"/><text class="t" x="718" y="217">⑫ 알림</text><text class="s" x="718" y="231">푸시</text>
+<path class="f hot" d="M574 51 H528" marker-end="url(#m5h)"/>
+<text class="e hot" x="551" y="45">UI 명세</text>
+<path class="f hot" d="M438 51 H424" marker-end="url(#m5h)"/>
+<path class="f hot" d="M334 51 H292" marker-end="url(#m5h)"/>
+<text class="e hot" x="313" y="45">SSE</text>
+<path class="f hot" d="M198 51 H184" marker-end="url(#m5h)"/>
+<path class="f hot" d="M84 51 H34 V82" marker-end="url(#m5h)"/>
+<text class="e l" x="40" y="44">보기</text>
+<path class="f" d="M134 72 V88" marker-end="url(#m5)"/>
+<text class="e l" x="140" y="84">요소 찾기</text>
+<text class="e" x="431" y="104">위 줄: 내려가는 길 (명세 → 화면)</text>
+<text class="e" x="431" y="120">아래 줄: 올라오는 길 (입력 → 서버)</text>
+<path class="f hot" d="M34 142 V161 H84" marker-end="url(#m5h)"/>
+<path class="f hot" d="M204 161 H334" marker-end="url(#m5h)"/>
+<text class="e hot" x="269" y="155">POST: 글 또는 {요소, 행동, 값}</text>
+<path class="f hot" d="M424 161 H438" marker-end="url(#m5h)"/>
+<path class="f hot" d="M522 140 V100 H600 V72" marker-end="url(#m5h)"/>
+<text class="e hot" x="551" y="95">대화 글</text>
+<path class="f hot" d="M528 161 H574" marker-end="url(#m5h)"/>
+<text class="e hot" x="551" y="155">조작 값</text>
+<path class="f" d="M661 140 V72" marker-end="url(#m5)"/>
+<text class="e l" x="667" y="110">상태 변경 알림</text>
+<path class="f async" d="M482 182 V221 H574" marker-end="url(#m5)"/>
+<text class="e l" x="488" y="208">오래 걸리는 일</text>
+<path class="f" d="M627 200 V182" marker-end="url(#m5)"/>
+<text class="e l" x="633" y="195">결과 반영</text>
+<path class="f" d="M680 221 H688" marker-end="url(#m5)"/>
+<path class="f async" d="M718 242 V258 H6 V113 H19" marker-end="url(#m5)"/>
+<text class="e" x="300" y="254">푸시·복귀 링크: 화면을 떠나도 돌아와 상태로 이어서</text>
+<circle class="stp" cx="59" cy="148" r="7.5"/><text class="stpn" x="59" y="151.6">1</text>
+<circle class="stp" cx="551" cy="64" r="7.5"/><text class="stpn" x="551" y="67.6">2</text>
+<circle class="stp" cx="313" cy="64" r="7.5"/><text class="stpn" x="313" y="67.6">3</text>
+<circle class="stp" cx="59" cy="64" r="7.5"/><text class="stpn" x="59" y="67.6">4</text>
+<circle class="stp" cx="59" cy="174" r="7.5"/><text class="stpn" x="59" y="177.6">5</text>
+<circle class="stp" cx="551" cy="174" r="7.5"/><text class="stpn" x="551" y="177.6">6</text>
+<circle class="stp" cx="648" cy="118" r="7.5"/><text class="stpn" x="648" y="121.6">7</text>
 </svg>
-<figcaption>내려가는 길: ⑨ UI 명세 → ⑥ 검증 → ⑤ 번호 부여 → ① 수신 → ② 그리기. 올라오는 길: ④ 구조화 이벤트 → ⑧ 재검증 → ⑩ 상태 반영 → ⑨에 상태 변경 알림(문장으로 바꾸지 않음).</figcaption>
+<figcaption>검은 원 번호가 처리 순서입니다. ❶ 시작: 사용자가 말을 걸면 ④ → ⑦ → ⑧을 거쳐 ⑨로(대화 글). ❷ ⑨가 의도를 파악해 화면 요소를 요청(UI 명세). ❸ ⑥ 검증 → ⑤ 번호 붙여 SSE. ❹ ① 수신 → ② 등록된 요소로 그림(③에서 찾음). ❺ 사용자가 요소를 조작. ❻ ⑧ 재검증 → ⑩ 상태 반영(문장으로 바꾸지 않음). ❼ ⑩이 ⑨에 상태 변경 알림 → ❷부터 다시. 오래 걸리는 일은 ⑪로 넘기고, 끝나면 ⑫ 푸시로 사용자를 다시 부릅니다(점선).</figcaption>
 </figure>
 <table>
 <tr><th>요소</th><th>하는 일</th><th>왜</th><th>기술 예</th></tr>
 <tr><td class="k"><span class="n">①</span> 스트림 수신</td><td>서버 이벤트로 화면 갱신, 끊기면 마지막 번호부터</td><td>실시간 표시, 재연결</td><td class="c">EventSource(SSE)</td></tr>
 <tr><td class="k"><span class="n">②③</span> 렌더러·요소 목록</td><td>명세의 이름을 등록된 화면 요소에 대응해 그림, 요소별 입력 형식</td><td>테스트된 요소만 사용 → 보안·일관성·접근성</td><td class="c">React, 디자인 시스템</td></tr>
-<tr><td class="k"><span class="n">④</span> 이벤트 송신</td><td>조작을 {요소 ID, 행동, 값, 상태 버전}으로 전송</td><td>값을 문장으로 바꿔 LLM이 다시 해석하지 않게</td><td class="c">HTTP POST</td></tr>
+<tr><td class="k"><span class="n">④</span> 입력 송신</td><td>대화 글은 메시지로, 조작은 {요소 ID, 행동, 값, 상태 버전}으로 전송</td><td>값을 문장으로 바꿔 LLM이 다시 해석하지 않게</td><td class="c">HTTP POST</td></tr>
 <tr><td class="k"><span class="n">⑤</span> 스트림 중계</td><td>이벤트 종류별 전송, 번호 부여</td><td>끊긴 지점부터 이어 받기</td><td class="c">Node.js·Spring BFF</td></tr>
 <tr><td class="k"><span class="n">⑥</span> 명세 검증</td><td>스키마·지원 요소 확인. 실패 시 오류를 돌려 1회 재생성 → 기본 입력 양식</td><td>잘못된 명세가 화면에 나가지 않음</td><td class="c">JSON Schema</td></tr>
 <tr><td class="k"><span class="n">⑦</span> 인증·세션</td><td>로그인 확인, 화면이 그릴 수 있는 요소·버전 협상</td><td>예전 버전 앱과 호환</td><td class="c">OIDC(Keycloak)</td></tr>
@@ -731,6 +818,48 @@ svg.arch .ah.hot { fill: var(--accent); }
 <div class="key">에이전트는 채널을 모른 채 의도("날짜 입력")만 요청하고, 채널 어댑터가 능력 선언에 맞춰 표현을 정한다. 상태는 서버 하나, 채널은 보여 주고 입력만. 새 요소는 대체 표현 → 화면 → 에이전트 순으로 기능 스위치를 켜 점진 공개.</div>
 
 <h3>사람 승인 화면과 결과 전달</h3>
+<figure>
+<svg class="arch" viewBox="0 0 760 264" role="img" aria-label="고객이 접수하면 서버의 워크플로우가 처리하다 사람이 필요한 건에서 상태를 저장하고 멈춘 뒤 검토 건을 올린다. 고객 화면에는 검토 중이, 담당자 업무 목록에는 새 건이 뜨며 둘 다 나가도 된다. 담당자가 선택하면 서버가 검증해 1회용 토큰으로 재개하고 결과를 고객에게 푸시한다">
+<defs><marker id="m6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="m6h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="zone" x="4" y="4" width="752" height="54" rx="8"/><text class="zt" x="14" y="29">고객</text><text class="s" x="14" y="44" style="text-anchor:start">웹·앱</text>
+<rect class="zone" x="4" y="74" width="752" height="84" rx="8"/><text class="zt" x="14" y="112">서버</text><text class="s" x="14" y="127" style="text-anchor:start">워크플로우</text>
+<rect class="zone" x="4" y="174" width="752" height="54" rx="8"/><text class="zt" x="14" y="199">담당자</text><text class="s" x="14" y="214" style="text-anchor:start">업무 화면</text>
+<rect class="wait" x="298" y="0" width="128" height="232" rx="6"/>
+<rect class="b client" x="74" y="11" width="92" height="40"/><text class="t" x="120" y="28">접수</text><text class="s" x="120" y="42">접수 번호 받음</text>
+<rect class="b client" x="304" y="11" width="116" height="40"/><text class="t" x="362" y="28">검토 중 표시</text><text class="s" x="362" y="42">소요 시간·나가도 됨</text>
+<rect class="b client opt" x="434" y="11" width="100" height="40"/><text class="t" x="484" y="28">보완 제출</text><text class="s" x="484" y="42">요청받은 경우만</text>
+<rect class="b client" x="670" y="11" width="82" height="40"/><text class="t" x="711" y="28">결과 확인</text><text class="s" x="711" y="42">푸시·결과 카드</text>
+<rect class="b app" x="180" y="82" width="110" height="68"/><text class="t" x="235" y="99">자동 처리</text><text class="s" x="235" y="113">조회·근거·판단 제안</text><text class="s" x="235" y="126">검증 → 분기</text><text class="s" x="235" y="139">사람 필요한 건</text>
+<rect class="b store" x="304" y="82" width="116" height="68"/><text class="t" x="362" y="99">멈춤 + 검토 건</text><text class="s" x="362" y="113">상태 저장</text><text class="s" x="362" y="126">배정·처리 기한</text><text class="s" x="362" y="139">기한 타이머</text>
+<rect class="b app" x="548" y="82" width="108" height="68"/><text class="t" x="602" y="99">검증 → 재개</text><text class="s" x="602" y="113">권한·카드 버전 확인</text><text class="s" x="602" y="126">1회용 토큰 발급</text><text class="s" x="602" y="139">쓰기: 토큰 + 멱등 키</text>
+<rect class="b human" x="304" y="181" width="116" height="40"/><text class="t" x="362" y="198">업무 목록에 뜸</text><text class="s" x="362" y="212">알림은 급한 건만</text>
+<rect class="b human" x="434" y="181" width="100" height="40"/><text class="t" x="484" y="198">카드 확인·선택</text><text class="s" x="484" y="212">승인·거절·수정</text>
+<path class="f hot" d="M120 51 V116 H180" marker-end="url(#m6h)"/>
+<path class="f hot" d="M290 116 H304" marker-end="url(#m6h)"/>
+<path class="f" d="M362 82 V51" marker-end="url(#m6)"/>
+<path class="f hot" d="M362 150 V181" marker-end="url(#m6h)"/>
+<text class="e l" x="368" y="170">등록</text>
+<path class="f hot" d="M420 201 H434" marker-end="url(#m6h)"/>
+<path class="f hot" d="M534 201 H600 V150" marker-end="url(#m6h)"/>
+<text class="e l hot" x="606" y="170">선택 이벤트</text>
+<path class="f hot" d="M656 116 H711 V51" marker-end="url(#m6h)"/>
+<text class="e r hot" x="705" y="70">결과 푸시</text>
+<path class="f async soft" d="M500 181 V51" marker-end="url(#m6)"/>
+<text class="e l" x="506" y="170">보완 요청</text>
+<path class="f async soft" d="M460 51 V100 H420" marker-end="url(#m6)"/>
+<text class="e l" x="466" y="70">제출</text>
+<circle class="stp" cx="74" cy="11" r="7.5"/><text class="stpn" x="74" y="14.6">1</text>
+<circle class="stp" cx="180" cy="82" r="7.5"/><text class="stpn" x="180" y="85.6">2</text>
+<circle class="stp" cx="304" cy="82" r="7.5"/><text class="stpn" x="304" y="85.6">3</text>
+<circle class="stp" cx="434" cy="181" r="7.5"/><text class="stpn" x="434" y="184.6">4</text>
+<circle class="stp" cx="548" cy="82" r="7.5"/><text class="stpn" x="548" y="85.6">5</text>
+<circle class="stp" cx="670" cy="11" r="7.5"/><text class="stpn" x="670" y="14.6">6</text>
+<text class="e" x="362" y="246">노란 칸(기다리는 동안): 고객·담당자 모두 나가도 됨. 기다리는 것은 서버(상태 + 기한 타이머)</text>
+<text class="e" x="362" y="259">기한 임박 → 담당자 재알림, 기한 초과 → 상위 담당자</text>
+</svg>
+<figcaption>줄은 누가, 왼쪽에서 오른쪽은 시간입니다. ❶ 고객 접수 → ❷ 워크플로우가 자동 처리하다 사람이 필요한 건에서 → ❸ 상태를 저장하고 멈춘 뒤 검토 건을 올립니다(고객 화면엔 "검토 중", 담당자 목록엔 새 건). 노란 칸 동안 둘 다 나가도 됩니다. ❹ 담당자가 카드를 보고 선택 → ❺ 서버가 권한·카드 버전을 확인해 1회용 토큰을 발급하고 멈춘 곳부터 재개해 쓰기(거절이면 쓰기 없이 사유 기록) → ❻ 결과를 푸시·결과 카드로 고객에게. 보완 요청(점선)은 고객이 제출하면 카드가 갱신되어 다시 검토합니다.</figcaption>
+</figure>
 <div class="cols">
 <div class="box"><h4>승인 카드와 반영</h4><ul>
 <li>보여 줄 것: 하려는 일(한 문장), 근거(원문·계산 내역·추출값 위치), 영향(금액·대상·되돌릴 수 있는지), 선택(승인 / 거절+사유 / 수정)</li>
