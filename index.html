@@ -131,14 +131,14 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <div class="sheet">
 
 <h1>AI 서비스 아키텍처 설계 정리</h1>
-<p class="sub">데이터 파이프라인·근거 데이터 / AI Agent 워크플로우·LLM·RAG / Agent 기반 동적 UI 연동</p>
+<p class="sub">데이터 준비·근거 추적 / 에이전트 실행 구조·RAG / 에이전트 화면 연동</p>
 <div class="legend">
 <span class="l-client"><i></i>화면·채널</span><span class="l-app"><i></i>서비스</span><span class="l-ai"><i></i>AI(LLM·OCR·임베딩)</span><span class="l-store"><i></i>저장소</span><span class="l-ext"><i></i>기간계·외부</span><span class="l-cross"><i></i>공통(보안·관측)</span><span class="l-human"><i></i>사람</span><span class="l-hot"><i></i>핵심 경로</span><span class="l-async"><i></i>비동기</span>
 </div>
 
 <!-- ============================ 0 ============================ -->
 <h2 class="first">1. 공통 설계 원칙과 전체 구성</h2>
-<div class="summary"><b>무엇에 대한 장인가</b> 세 주제의 공통 설계 원칙과 계층형 전체 구성. 2~4장 그림은 이 구성의 일부를 확대한 것.</div>
+<div class="summary"><b>무엇에 대한 장인가</b> 세 영역(데이터, 에이전트·RAG, 화면)의 공통 설계 원칙과 계층형 전체 구성. 2~4장 그림은 이 구성의 일부를 확대한 것.</div>
 <h3>설계 원칙 10가지</h3>
 <table>
 <tr><th>원칙</th><th>이유</th></tr>
@@ -181,7 +181,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <rect class="b app" x="78" y="369" width="128" height="38"/><text class="t" x="142" y="385">메시지 큐</text><text class="s" x="142" y="399">서비스 간 비동기 전달</text>
 <rect class="b app" x="212" y="369" width="128" height="38"/><text class="t" x="276" y="385">변경분 복제(CDC)</text><text class="s" x="276" y="399">기간계 → 데이터 계층</text>
 <rect class="b app" x="346" y="369" width="262" height="38"/><text class="t" x="477" y="385">연계 어댑터</text><text class="s" x="477" y="399">기간계 호출: 형식 변환·멱등 키·재시도</text>
-<rect class="b ext" x="628" y="369" width="120" height="38"/><text class="t" x="688" y="385">기간계 (외부)</text><text class="s" x="688" y="399">계약·지급 등 핵심 업무</text>
+<rect class="b ext" x="628" y="369" width="120" height="38"/><text class="t" x="688" y="385">기간계 (외부)</text><text class="s" x="688" y="399">계약·주문 등 핵심 업무</text>
 <path class="f" d="M608 388 H628" marker-end="url(#m0)"/>
 <rect class="b app" x="78" y="195" width="128" height="38"/><text class="t" x="142" y="211">문서 판독</text><text class="s" x="142" y="225">OCR·멀티모달 서비스</text>
 <rect class="b app" x="212" y="195" width="128" height="38"/><text class="t" x="276" y="211">RAG 검색</text><text class="s" x="276" y="225">버전 필터+하이브리드</text>
@@ -213,7 +213,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 </table>
 
 <!-- ============================ 1 ============================ -->
-<h2>2. AI 기반 데이터 파이프라인과 근거 데이터</h2>
+<h2>2. 데이터 준비와 근거 추적</h2>
 <div class="summary"><b>무엇에 대한 장인가</b> AI가 쓸 데이터를 원천(문서·이미지·업무 DB·처리 이력)에서 가져와 수집 → 가공 → 검증 → 저장 → 제공으로 준비하는 과정, 그리고 AI의 답·판단이 기대는 근거(출처·버전·위치가 붙은 데이터)를 남겨 설명·재현하는 방법. <b>핵심</b> 원본은 고치지 않고, AI 결과는 검증을 통과해야 저장하며, 버전은 검색이 아니라 조건으로 맞춘다.</div>
 <h3>단계 구성</h3>
 <figure>
@@ -226,7 +226,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <rect class="zone" x="378" y="4" width="116" height="232" rx="8"/><text class="zt c" x="436" y="22">검증</text>
 <rect class="zone" x="508" y="4" width="116" height="232" rx="8"/><text class="zt c" x="566" y="22">저장</text>
 <rect class="zone" x="638" y="4" width="116" height="232" rx="8"/><text class="zt c" x="696" y="22">제공</text>
-<rect class="b ext" x="10" y="32" width="88" height="42"/><text class="t" x="54" y="50">규정 문서</text><text class="s" x="54" y="65">예: 약관·매뉴얼</text>
+<rect class="b ext" x="10" y="32" width="88" height="42"/><text class="t" x="54" y="50">규정 문서</text><text class="s" x="54" y="65">예: 정책·매뉴얼</text>
 <rect class="b app" x="124" y="32" width="104" height="42"/><text class="t" x="176" y="50">① 배치 수집</text><text class="s" x="176" y="65">Airflow</text>
 <rect class="b ai" x="254" y="32" width="104" height="42"/><text class="t" x="306" y="50">② 문서 파싱</text><text class="s" x="306" y="65">레이아웃·구조·표</text>
 <rect class="b app" x="384" y="32" width="104" height="42"/><text class="t" x="436" y="50">③ 구조 검사</text><text class="s" x="436" y="65">조항 수·누락률</text>
@@ -243,7 +243,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <rect class="b app" x="384" y="132" width="104" height="42"/><text class="t" x="436" y="150">⑬ 대조 검사</text><text class="s" x="436" y="165">원본과 건수·합계</text>
 <rect class="b store" x="514" y="132" width="104" height="42"/><text class="t" x="566" y="150">⑭ 업무 데이터</text><text class="s" x="566" y="165">조회용 사본</text>
 <rect class="b app" x="644" y="132" width="104" height="42"/><text class="t" x="696" y="150">⑮ 조회 도구</text><text class="s" x="696" y="165">에이전트용</text>
-<rect class="b ext" x="10" y="182" width="88" height="42"/><text class="t" x="54" y="200">처리 이력</text><text class="s" x="54" y="215">예: 심사 결과</text>
+<rect class="b ext" x="10" y="182" width="88" height="42"/><text class="t" x="54" y="200">처리 이력</text><text class="s" x="54" y="215">예: 검토 결과</text>
 <rect class="b ai" x="254" y="182" width="104" height="42"/><text class="t" x="306" y="200">⑯ 분류·연결</text><text class="s" x="306" y="215">메모 분류(LLM)</text>
 <rect class="b human" x="384" y="182" width="104" height="42"/><text class="t" x="436" y="200">⑰ 사람 검수</text><text class="s" x="436" y="215">분류 확인·2인 합의</text>
 <rect class="b store" x="514" y="182" width="104" height="42"/><text class="t" x="566" y="200">⑱ 평가 데이터</text><text class="s" x="566" y="215">정답·수정 이력</text>
@@ -281,7 +281,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 </figure>
 <table>
 <tr><th>요소</th><th>하는 일</th><th>왜</th><th>기술 예</th></tr>
-<tr><th colspan="4" class="grp">규정 문서 (예: 약관·매뉴얼 PDF) · 등록될 때 배치</th></tr>
+<tr><th colspan="4" class="grp">규정 문서 (예: 정책·매뉴얼 PDF) · 등록될 때 배치</th></tr>
 <tr><td class="k"><span class="n">①</span> 배치 수집</td><td>문서 등록 이벤트로 원본을 가져와 보관</td><td>자주 안 바뀜, 저장 전 확인</td><td class="c">Airflow</td></tr>
 <tr><td class="k"><span class="n">②</span> 문서 파싱</td><td>레이아웃 분석 → 구조(조·절) 단위로 나눔, 표 별도, 버전 부착</td><td>구조가 깨지면 인용도 깨짐</td><td class="c">PyMuPDF, pdfplumber, LLM 보조</td></tr>
 <tr><td class="k"><span class="n">③</span> 구조 검사</td><td>원문 대비 조항 수·표 개수·누락률, 버전 중복</td><td>정답 없이 틀린 것 찾기</td><td class="c">검증 규칙</td></tr>
@@ -292,7 +292,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <tr><td class="k"><span class="n">⑦</span> 서류 판독</td><td>이미지 품질 확인 → OCR·멀티모달 LLM으로 값 추출</td><td>사람 입력 대체</td><td class="c">사내 OCR, 멀티모달 LLM</td></tr>
 <tr><td class="k"><span class="n">⑧</span> 교차 검증</td><td>합계 = 총액, 두 방법 값 일치, 서류 간 대조</td><td>오독 검출</td><td class="c">규칙 코드</td></tr>
 <tr><td class="k"><span class="n">⑨⑩</span> 저장·입력</td><td>값 + 위치 + 모델 버전 저장 → 업무 처리 입력</td><td>어디서 무엇으로 읽었는지 추적</td><td class="c">PostgreSQL</td></tr>
-<tr><th colspan="4" class="grp">업무 DB (예: 계약·주문) · 처리 이력 (예: 심사·상담 결과) · 같은 기간계에서 수집</th></tr>
+<tr><th colspan="4" class="grp">업무 DB (예: 계약·주문) · 처리 이력 (예: 검토·상담 결과) · 같은 기간계에서 수집</th></tr>
 <tr><td class="k"><span class="n">⑪</span> 변경분 복제</td><td>바뀐 행만 복사 → 스테이징(단기)</td><td>원천 시스템 부하 최소</td><td class="c">Debezium(CDC), 일 배치</td></tr>
 <tr><td class="k"><span class="n">⑫</span> 형식 맞추기</td><td>목표 스키마로 변환</td><td>늘 같은 결과 → AI 안 씀</td><td class="c">SQL, dbt</td></tr>
 <tr><td class="k"><span class="n">⑬</span> 대조 검사</td><td>건수·합계를 원본과 비교</td><td>원본과 직접 비교 가능</td><td class="c">검증 규칙</td></tr>
@@ -360,7 +360,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <div class="box"><h4>인용 단위와 버전 맞추기</h4><ul>
 <li>인용 단위 = 구조 단위(조·항·절). 사람이 읽고 설명·감사·개정 비교하는 단위. 고정 길이 조각은 부적합</li>
 <li><b>적재</b>: (대상, 시행일)마다 버전 ID 발급, 이전 버전 종료일을 닫음(덮어쓰기 금지). 모든 조각에 버전 ID·시행일·종료일·조항 ID</li>
-<li><b>조회</b>: 기준일(예: 가입일·신청일)로 SQL 조회 → 버전 조건을 먼저 걸고 그 안에서만 검색. 0건이면 오류(조건 없는 검색 금지)</li>
+<li><b>조회</b>: 기준일(예: 계약일·신청일)로 SQL 조회 → 버전 조건을 먼저 걸고 그 안에서만 검색. 0건이면 오류(조건 없는 검색 금지)</li>
 <li>내용이 같은 조각은 본문 고유값으로 임베딩 재사용</li>
 </ul></div>
 <div class="box"><h4>저장소 4종</h4><ul>
@@ -435,7 +435,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <div class="key"><b>데이터 이력 두 방향</b> 판단 → 입력·근거 → 원본 문서 / 이 문서 버전이 쓰인 판단 목록(개정·오류 시 영향 범위). <b>재평가</b>는 당시 입력과 당시 문서 버전을 고정하고 모델만 바꿔 일치율을 비교한다.</div>
 
 <!-- ============================ 2 ============================ -->
-<h2>3. AI Agent 워크플로우와 LLM·RAG</h2>
+<h2>3. 에이전트 실행 구조와 RAG</h2>
 <div class="summary"><b>무엇에 대한 장인가</b> AI가 업무를 처리하는 실행 구조. 정해진 워크플로우가 단계를 지휘하고, LLM은 단계 안에서 판단을 제안하며, RAG로 근거를 찾아 인용한다. <b>핵심</b> 자율성은 대화·탐색에만, 쓰기 도구는 검증·승인 후에만, 모든 LLM 호출은 게이트웨이로, 계산은 코드로.</div>
 <h3>블록 구성</h3>
 <figure>
@@ -590,9 +590,9 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <tr><td class="k">조각내기</td><td>구조 단위(조·절) + 상위 제목 부착, 표는 별도</td><td>고정 길이는 조항을 끊음</td></tr>
 <tr><td class="k">사전 필터</td><td>기준일로 버전 확정(코드), 권한 조건</td><td>유사도로 버전 구분 불가, 권한 밖 문서 차단</td></tr>
 <tr><td class="k">하이브리드</td><td>BM25 + 벡터, 순위 합치기(RRF), 질의도 색인과 같은 임베딩 모델로</td><td>조항 번호·코드는 정확 일치, 표현 차이는 뜻 검색</td></tr>
-<tr><td class="k">질의 재작성</td><td>사용자 표현 → 문서 용어 (예: 디스크 → 추간판탈출증), 여러 질의</td><td>표현 차이로 검색 누락</td></tr>
+<tr><td class="k">질의 재작성</td><td>사용자 표현 → 문서 용어 (예: 연차 → 연차유급휴가), 여러 질의</td><td>표현 차이로 검색 누락</td></tr>
 <tr><td class="k">리랭킹</td><td>상위 5~8개만 LLM에</td><td>많이 넣을수록 중간 내용 무시, 비용↑</td></tr>
-<tr><td class="k">필수 조각</td><td>정의·예외(면책) 조항은 점수와 무관하게 포함</td><td>예외 누락이 가장 위험</td></tr>
+<tr><td class="k">필수 조각</td><td>정의·예외(적용 제외) 조항은 점수와 무관하게 포함</td><td>예외 누락이 가장 위험</td></tr>
 <tr><td class="k">생성</td><td>구조화 출력(결과·근거 ID·인용문·사유), "근거 없음" 허용</td><td>지어내기 방지, 사람에게 넘길 길</td></tr>
 <tr><td class="k">인용 검증</td><td>인용문이 원문에 있는지 코드로 확인 → 불일치 시 1회 재생성 → 사람</td><td>근거 없는 답 차단</td></tr>
 </table>
@@ -618,7 +618,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <li>지시문 발견 시 의심 건으로 사람에게</li>
 </ul></div>
 <div class="box"><h4>민감정보·비용</h4><ul>
-<li>LLM 보내기 전·로그에서 가림, 망분리 허용 구간 모델, 학습 미사용 조건</li>
+<li>LLM 보내기 전·로그에서 가림, 허용된 배포 구간의 모델만, 학습 미사용 조건</li>
 <li>작은 모델로 분류 → 필요할 때만 큰 모델, 프롬프트 캐싱, 조회 결과 짧은 캐시</li>
 <li>판단 결과는 캐시하지 않음(매번 기록), 배치 API, 실시간·배치 한도 분리</li>
 </ul></div>
@@ -630,7 +630,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <tr><th>원인</th><th>개선</th><th>지표</th></tr>
 <tr><td class="k">검색 안 됨</td><td>구조 단위 조각, 상위 제목, BM25 추가, 질의 재작성</td><td>재현율@k (정답이 상위 k에 든 비율)</td></tr>
 <tr><td class="k">순위 낮음</td><td>리랭커, 가져오는 개수 조정</td><td>MRR (정답이 얼마나 위에)</td></tr>
-<tr><td class="k">받고도 틀림</td><td>인용 강제, 확인 순서 지정(지급 → 예외 → 한도), 정의 조항 동봉, 상위 모델, 계산은 코드</td><td>충실도(근거 기반 정도), 정답 일치</td></tr>
+<tr><td class="k">받고도 틀림</td><td>인용 강제, 확인 순서 지정(대상 → 예외 → 한도), 정의 조항 동봉, 상위 모델, 계산은 코드</td><td>충실도(근거 기반 정도), 정답 일치</td></tr>
 <tr><td class="k">표 내용 누락</td><td>표 구조 파싱, 행 단위 문장화</td><td>표 질의 정답률</td></tr>
 <tr><td class="k">없는데 답함</td><td>"근거 없음" 허용, 검색 점수 낮으면 보류</td><td>모를 때 모른다 비율</td></tr>
 </table>
@@ -660,7 +660,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 </div>
 
 <!-- ============================ 3 ============================ -->
-<h2>4. AI Agent 기반 동적 UI 연동</h2>
+<h2>4. 에이전트 화면 연동 (생성형 UI)</h2>
 <div class="summary"><b>무엇에 대한 장인가</b> 에이전트가 대화 중에 필요한 화면 요소(달력·검색·요약 카드 등)를 띄우고, 사용자의 조작을 다시 받아 처리하는 화면 ↔ 서버 연동 구조. <b>핵심</b> 에이전트는 명세만 보내고 화면은 등록된 요소만 그리며, 조작은 문장이 아닌 구조화 이벤트로 돌아오고, 상태의 기준은 서버 하나다.</div>
 <h3>블록 구성</h3>
 <figure>
@@ -739,7 +739,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <h3>대화와 화면 요소 나누기</h3>
 <table>
 <tr><th>대화로</th><th>화면 요소로</th></tr>
-<tr><td>의도 파악, 자유 서술(예: 사고 경위), 예외·질문 응대, 결과 설명</td><td>형식이 정해진 값(달력, 검색 자동완성, 목록 선택), 선택지, 확인·수정(요약 카드), 진행 단계, 파일 올리기</td></tr>
+<tr><td>의도 파악, 자유 서술(예: 상황 설명), 예외·질문 응대, 결과 설명</td><td>형식이 정해진 값(달력, 검색 자동완성, 목록 선택), 선택지, 확인·수정(요약 카드), 진행 단계, 파일 올리기</td></tr>
 </table>
 <div class="key">이미 아는 것은 묻지 않는다(조회해 선택지로). 문서에서 읽을 수 있는 것은 묻지 않는다(먼저 받아 자동 채움). 대화와 화면 요소가 같은 상태를 본다(어느 쪽으로 고쳐도 같은 값이 바뀜). 예) 항목 10개를 대화로만 받으면 20턴 이상 → 화면 요소로 6~8턴.</div>
 
@@ -751,9 +751,9 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <tr><td class="k">등록된 요소 중 선택<br>(선언적 명세, 권장)</td><td>안전·일관·테스트 가능 / 표현 범위 제한</td></tr>
 <tr><td class="k">LLM이 HTML·코드 생성</td><td>자유도 높음 / XSS 위험, 품질 불안정</td></tr>
 </table>
-<pre>{ "type": "date_picker", "id": "visit_date", "version": 1,
-  "props": { "label": "방문 일자", "max": "today" },
-  "fallbackText": "방문 일자를 알려주세요 (예: 10월 5일)" }</pre>
+<pre>{ "type": "date_picker", "id": "start_date", "version": 1,
+  "props": { "label": "시작 일자", "max": "today" },
+  "fallbackText": "시작 일자를 알려주세요 (예: 10월 5일)" }</pre>
 <p class="c">참고 규격: AG-UI(에이전트 ↔ 화면 이벤트), A2UI(선언적 UI 명세), MCP Apps</p>
 </div>
 <div>
@@ -790,7 +790,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <li>명세 오류 → 1회 재생성 → 기본 양식. 에이전트 장애 → 일반 입력 양식(대화 없이도 완료)</li>
 <li>판단·금액은 흘려보내지 않음: 확정값만 카드로 한 번에, 설명은 그 뒤 스트리밍</li>
 <li>스트림 중단 → "응답 중단" 표시 + 다시 시도(중복 접수 없게)</li>
-<li>재심으로 바뀌면 덮어쓰지 않고 이력과 사유 표시</li>
+<li>재검토로 결과가 바뀌면 덮어쓰지 않고 이력과 사유 표시</li>
 </ul></div>
 <div class="box"><h4>오래 걸리는 작업과 복귀</h4><ul>
 <li>즉시 접수 표시 + 진행 단계, 기다리는 동안 다음 입력 진행, 10초 넘으면 "나가도 됩니다"</li>
@@ -878,7 +878,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 
 <!-- ============================ 4 ============================ -->
 <h2>5. 전체 흐름, 위험, 단계적 도입</h2>
-<div class="summary"><b>무엇에 대한 장인가</b> 세 주제를 하나의 서비스로 묶었을 때의 처리 흐름, 가장 큰 위험과 대응, 단계적 도입과 변경 배포, 영역별 지표.</div>
+<div class="summary"><b>무엇에 대한 장인가</b> 세 영역을 하나의 서비스로 묶었을 때의 처리 흐름, 가장 큰 위험과 대응, 단계적 도입과 변경 배포, 영역별 지표.</div>
 <h3>전체 흐름 (1장 전체 구성 그림 기준)</h3>
 <table>
 <tr><th>#</th><th>흐름</th><th>담당</th></tr>
@@ -905,7 +905,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <tr><th>단계</th><th>내용</th><th>다음 단계 조건 (예)</th></tr>
 <tr><td class="k">1. 사람 보조</td><td>AI는 추출·제안만, 모든 건을 사람이 확정, 평가 데이터 축적</td><td>추출 정확도 98%, 제안과 사람 확정 일치 90%</td></tr>
 <tr><td class="k">2. 제한적 자동화</td><td>저위험·소액·단순 건만 자동, 새 화면은 일부 사용자에 A/B</td><td>표본 오류율 목표 이하, 완료율 상승</td></tr>
-<tr><td class="k">3. 확대</td><td>범위·채널 확대</td><td>자동 처리율 목표, 민원율 유지</td></tr>
+<tr><td class="k">3. 확대</td><td>범위·채널 확대</td><td>자동 처리율 목표, 불만 접수율 유지</td></tr>
 </table>
 <div class="key">되돌림 조건을 미리 정한다(예: 주간 오류율 초과 → 자동 처리 상한을 이전 단계로). 모델·프롬프트·규칙·색인 변경은 유형별 골든셋 회귀 → 섀도 실행(결과 미반영) → 카나리(5 → 25 → 100%) → 이상 시 자동 되돌림. 모든 판단에 사용 버전을 기록.</div>
 
@@ -918,7 +918,7 @@ svg.arch .cn { font-size: 10.5px; font-weight: 700; fill: var(--accent); text-an
 <tr><td class="k">결과 품질</td><td>자동 처리 비율, 표본 감사 오류율, 사람이 뒤집은 비율, 이의 제기율</td></tr>
 <tr><td class="k">화면</td><td>완료율, 건당 턴 수, 단계별 이탈, 복귀 후 완료율, 명세 실패율</td></tr>
 </table>
-<div class="key"><b>구성도 그리는 순서</b> ① 전체 지도(계층형)를 먼저: 필요한 상자만 남기고 업무 용어로 바꾼다 ② 계층 사이에 경계를 넘는 방식을 적는다 ③ 핵심 규칙 하나를 주황으로 강조(예: 모든 LLM 호출은 게이트웨이로) ④ 묻는 부분을 확대 그림으로(데이터 파이프라인은 원천별 줄, Agent는 블록, 동적 UI는 화면·BFF·서버) ⑤ 상자 번호와 "하는 일·왜·기술" 표</div>
+<div class="key"><b>구성도 그리는 순서</b> ① 전체 지도(계층형)를 먼저: 필요한 상자만 남기고 업무 용어로 바꾼다 ② 계층 사이에 경계를 넘는 방식을 적는다 ③ 핵심 규칙 하나를 주황으로 강조(예: 모든 LLM 호출은 게이트웨이로) ④ 필요한 부분을 확대 그림으로(데이터 파이프라인은 원천별 줄, Agent는 블록, 동적 UI는 화면·BFF·서버) ⑤ 상자 번호와 "하는 일·왜·기술" 표</div>
 
 </div>
 </body>
